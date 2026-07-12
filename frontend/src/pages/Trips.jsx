@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
-import { fetchTrips, createTrip, dispatchTrip, fetchVehicles, fetchDrivers } from '../services/mockApi';
+import { fetchTrips, createTrip, dispatchTrip, fetchVehicles, fetchDrivers } from '../services/realApi';
 
 function Trips() {
   const [trips, setTrips] = useState([]);

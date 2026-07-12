@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
-import { fetchDashboardStats } from '../services/mockApi';
+import { fetchDashboardStats } from '../services/realApi';
 
 function Dashboard() {
   const [stats, setStats] = useState({
