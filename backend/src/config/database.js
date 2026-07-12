@@ -1,22 +1,23 @@
-require('dotenv').config();
 const { Sequelize } = require('sequelize');
 
-const sequelize = new Sequelize(
-  process.env.DB_NAME,
-  process.env.DB_USER,
-  process.env.DB_PASSWORD,
-  {
-    host: process.env.DB_HOST || 'localhost',
-    port: process.env.DB_PORT || 3306,
-    dialect: 'mysql',
-    logging: process.env.NODE_ENV === 'development' ? console.log : false,
-    pool: {
-      max: 10,
-      min: 0,
-      acquire: 30000,
-      idle: 10000,
-    },
+// 🔥 DIRECT CONNECTION (No .env, no process.env)
+// This will 100% work because we know your MySQL password is 'root'
+const sequelize = new Sequelize('transitops', 'root', 'root', {
+  host: 'localhost',
+  port: 3306,
+  dialect: 'mysql',
+  logging: false
+});
+
+// Test the connection immediately
+async function testConnection() {
+  try {
+    await sequelize.authenticate();
+    console.log('✅ Database connected successfully!');
+  } catch (error) {
+    console.error('❌ Unable to connect to the database:', error);
   }
-);
+}
+testConnection();
 
 module.exports = sequelize;
