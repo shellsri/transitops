@@ -1,16 +1,7 @@
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define(
-    'User',
+    "User",
     {
-      id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-      },
-      name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
       email: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -22,14 +13,16 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       role: {
-        type: DataTypes.ENUM('admin', 'dispatcher', 'driver'),
+        type: DataTypes.ENUM("admin", "dispatcher", "driver", "Fleet Manager"),
         allowNull: false,
-        defaultValue: 'dispatcher',
+        defaultValue: "dispatcher",
       },
     },
     {
-      tableName: 'users',
+      tableName: "users",
       timestamps: true,
+      createdAt: "created_at",
+      updatedAt: "updated_at",
     }
   );
 
