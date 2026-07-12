@@ -1,54 +1,108 @@
-import { useState, useEffect } from 'react';
-import Sidebar from '../components/Sidebar';
-import { fetchVehicles, createVehicle } from '../services/realApi';
+import { useState, useEffect } from "react";
+import Sidebar from "../components/Sidebar";
+import { fetchVehicles, createVehicle } from "../services/realApi";
 
 function Vehicles() {
   const [vehicles, setVehicles] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+
   const [formData, setFormData] = useState({
-    reg_number: '',
-    name: '',
-    type: 'Van',
-    max_load: '',
+    reg_number: "",
+    name: "",
+    type: "Van",
+    max_load: "",
   });
 
   useEffect(() => {
     loadVehicles();
   }, []);
 
-  const loadVehicles = () => {
-    fetchVehicles().then((data) => setVehicles(data));
-  };
+  async function loadVehicles() {
+    try {
+      setLoading(true);
+      const data = await fetchVehicles();
+      setVehicles(Array.isArray(data) ? data : data.data || []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    createVehicle(formData).then(() => {
-      loadVehicles();
-      setShowForm(false);
-      setFormData({ reg_number: '', name: '', type: 'Van', max_load: '' });
+  function handleChange(e) {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
     });
-  };
+  }
 
-  const getStatusClass = (status) => {
-    if (status === 'Available') return 'badge badge-green';
-    if (status === 'On Trip') return 'badge badge-blue';
-    if (status === 'In Shop') return 'badge badge-orange';
-    if (status === 'Retired') return 'badge badge-red';
-    return 'badge';
-  };
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    try {
+      await createVehicle(formData);
+
+      setFormData({
+        reg_number: "",
+        name: "",
+        type: "Van",
+        max_load: "",
+      });
+
+      setShowForm(false);
+
+      loadVehicles();
+    } catch (err) {
+      console.error(err);
+      alert("Unable to create vehicle.");
+    }
+  }
+
+  function getStatusClass(status) {
+    switch ((status || "").toLowerCase()) {
+      case "available":
+        return "badge badge-green";
+
+      case "on trip":
+        return "badge badge-blue";
+
+      case "maintenance":
+      case "in shop":
+        return "badge badge-orange";
+
+      case "retired":
+        return "badge badge-red";
+
+      default:
+        return "badge";
+    }
+  }
 
   return (
     <div className="page-layout">
       <Sidebar />
+
       <div className="main-content">
         <div className="page-header">
-          <h1>Vehicle Registry</h1>
-          <button className="btn-primary" onClick={() => setShowForm(!showForm)}>
-            + Add Vehicle
+          <div>
+            <h1>Fleet Registry</h1>
+
+            <p
+              style={{
+                color: "#9ca3af",
+                marginTop: "6px",
+              }}
+            >
+              Manage all vehicles available in your fleet.
+            </p>
+          </div>
+
+          <button
+            className="btn-primary"
+            onClick={() => setShowForm(!showForm)}
+          >
+            {showForm ? "Close" : "+ Add Vehicle"}
           </button>
         </div>
 
@@ -62,19 +116,26 @@ function Vehicles() {
               onChange={handleChange}
               required
             />
+
             <input
               type="text"
               name="name"
-              placeholder="Vehicle Name/Model"
+              placeholder="Vehicle Name"
               value={formData.name}
               onChange={handleChange}
               required
             />
-            <select name="type" value={formData.type} onChange={handleChange}>
-              <option value="Van">Van</option>
-              <option value="Truck">Truck</option>
-              <option value="Bike">Bike</option>
+
+            <select
+              name="type"
+              value={formData.type}
+              onChange={handleChange}
+            >
+              <option>Van</option>
+              <option>Truck</option>
+              <option>Bike</option>
             </select>
+
             <input
               type="number"
               name="max_load"
@@ -83,38 +144,77 @@ function Vehicles() {
               onChange={handleChange}
               required
             />
-            <button type="submit" className="btn-primary">
-              Save
+
+            <button className="btn-primary">
+              Save Vehicle
             </button>
           </form>
         )}
 
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Reg. Number</th>
-              <th>Name</th>
-              <th>Type</th>
-              <th>Max Load</th>
-              <th>Odometer</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {vehicles.map((v) => (
-              <tr key={v.id}>
-                <td>{v.reg_number}</td>
-                <td>{v.name}</td>
-                <td>{v.type}</td>
-                <td>{v.max_load} kg</td>
-                <td>{v.odometer}</td>
-                <td>
-                  <span className={getStatusClass(v.status)}>{v.status}</span>
-                </td>
+        {loading ? (
+          <div
+            style={{
+              marginTop: "60px",
+              textAlign: "center",
+              color: "#9ca3af",
+            }}
+          >
+            Loading vehicles...
+          </div>
+        ) : vehicles.length === 0 ? (
+          <div
+            style={{
+              marginTop: "80px",
+              textAlign: "center",
+            }}
+          >
+            <h2>No Vehicles Found</h2>
+
+            <p
+              style={{
+                color: "#9ca3af",
+                marginTop: "10px",
+              }}
+            >
+              Add your first fleet vehicle to begin managing operations.
+            </p>
+          </div>
+        ) : (
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Registration</th>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Max Load</th>
+                <th>Odometer</th>
+                <th>Status</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+
+            <tbody>
+              {vehicles.map((vehicle) => (
+                <tr key={vehicle.id}>
+                  <td>{vehicle.reg_number}</td>
+
+                  <td>{vehicle.name}</td>
+
+                  <td>{vehicle.type}</td>
+
+                  <td>{vehicle.max_load} kg</td>
+
+                  <td>{vehicle.odometer || 0} km</td>
+
+                  <td>
+                    <span className={getStatusClass(vehicle.status)}>
+                      {vehicle.status || "Unknown"}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );

@@ -1,63 +1,123 @@
-import { useState, useEffect } from 'react';
-import Sidebar from '../components/Sidebar';
-import { fetchDrivers, createDriver } from '../services/realApi';
+import { useState, useEffect } from "react";
+import Sidebar from "../components/Sidebar";
+import { fetchDrivers, createDriver } from "../services/realApi";
 
 function Drivers() {
   const [drivers, setDrivers] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+
   const [formData, setFormData] = useState({
-    name: '',
-    license_number: '',
-    license_expiry: '',
-    contact: '',
+    name: "",
+    license_number: "",
+    license_expiry: "",
+    contact: "",
   });
 
   useEffect(() => {
     loadDrivers();
   }, []);
 
-  const loadDrivers = () => {
-    fetchDrivers().then((data) => setDrivers(data));
-  };
+  async function loadDrivers() {
+    try {
+      setLoading(true);
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+      const data = await fetchDrivers();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    createDriver(formData).then(() => {
-      loadDrivers();
-      setShowForm(false);
-      setFormData({ name: '', license_number: '', license_expiry: '', contact: '' });
+      setDrivers(Array.isArray(data) ? data : data.data || []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function handleChange(e) {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
     });
-  };
+  }
 
-  const isLicenseExpired = (expiryDate) => {
-    return new Date(expiryDate) < new Date();
-  };
+  async function handleSubmit(e) {
+    e.preventDefault();
 
-  const getStatusClass = (status) => {
-    if (status === 'Available') return 'badge badge-green';
-    if (status === 'On Trip') return 'badge badge-blue';
-    if (status === 'Off Duty') return 'badge badge-orange';
-    if (status === 'Suspended') return 'badge badge-red';
-    return 'badge';
-  };
+    try {
+      await createDriver(formData);
+
+      setShowForm(false);
+
+      setFormData({
+        name: "",
+        license_number: "",
+        license_expiry: "",
+        contact: "",
+      });
+
+      loadDrivers();
+    } catch (err) {
+      console.error(err);
+      alert("Unable to add driver.");
+    }
+  }
+
+  function isLicenseExpired(date) {
+    if (!date) return false;
+    return new Date(date) < new Date();
+  }
+
+  function getStatusClass(status) {
+    switch ((status || "").toLowerCase()) {
+      case "available":
+        return "badge badge-green";
+
+      case "on trip":
+      case "active":
+        return "badge badge-blue";
+
+      case "off duty":
+        return "badge badge-orange";
+
+      case "suspended":
+        return "badge badge-red";
+
+      default:
+        return "badge";
+    }
+  }
 
   return (
     <div className="page-layout">
       <Sidebar />
+
       <div className="main-content">
         <div className="page-header">
-          <h1>Drivers & Safety Profiles</h1>
-          <button className="btn-primary" onClick={() => setShowForm(!showForm)}>
-            + Add Driver
+          <div>
+            <h1>Drivers & Safety</h1>
+
+            <p
+              style={{
+                color: "#9ca3af",
+                marginTop: 6,
+              }}
+            >
+              Manage drivers, licences and safety records.
+            </p>
+          </div>
+
+          <button
+            className="btn-primary"
+            onClick={() => setShowForm(!showForm)}
+          >
+            {showForm ? "Close" : "+ Add Driver"}
           </button>
         </div>
 
         {showForm && (
-          <form className="inline-form" onSubmit={handleSubmit}>
+          <form
+            className="inline-form"
+            onSubmit={handleSubmit}
+          >
             <input
               type="text"
               name="name"
@@ -66,14 +126,16 @@ function Drivers() {
               onChange={handleChange}
               required
             />
+
             <input
               type="text"
               name="license_number"
-              placeholder="License Number"
+              placeholder="Licence Number"
               value={formData.license_number}
               onChange={handleChange}
               required
             />
+
             <input
               type="date"
               name="license_expiry"
@@ -81,53 +143,100 @@ function Drivers() {
               onChange={handleChange}
               required
             />
+
             <input
               type="text"
               name="contact"
-              placeholder="Contact Number"
+              placeholder="Phone Number"
               value={formData.contact}
               onChange={handleChange}
               required
             />
-            <button type="submit" className="btn-primary">
-              Save
+
+            <button className="btn-primary">
+              Save Driver
             </button>
           </form>
         )}
 
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>License No.</th>
-              <th>License Expiry</th>
-              <th>Contact</th>
-              <th>Safety Score</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {drivers.map((d) => (
-              <tr key={d.id}>
-                <td>{d.name}</td>
-                <td>{d.license_number}</td>
-                <td>
-                  {d.license_expiry}
-                  {isLicenseExpired(d.license_expiry) && (
-                    <span className="badge badge-red" style={{ marginLeft: 8 }}>
-                      Expired
-                    </span>
-                  )}
-                </td>
-                <td>{d.contact}</td>
-                <td>{d.safety_score}</td>
-                <td>
-                  <span className={getStatusClass(d.status)}>{d.status}</span>
-                </td>
+        {loading ? (
+          <div
+            style={{
+              marginTop: 70,
+              textAlign: "center",
+              color: "#9ca3af",
+            }}
+          >
+            Loading drivers...
+          </div>
+        ) : drivers.length === 0 ? (
+          <div
+            style={{
+              marginTop: 80,
+              textAlign: "center",
+            }}
+          >
+            <h2>No Drivers Found</h2>
+
+            <p
+              style={{
+                color: "#9ca3af",
+              }}
+            >
+              Add your first driver to begin assigning trips.
+            </p>
+          </div>
+        ) : (
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Licence</th>
+                <th>Expiry</th>
+                <th>Contact</th>
+                <th>Safety Score</th>
+                <th>Status</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+
+            <tbody>
+              {drivers.map((driver) => (
+                <tr key={driver.id}>
+                  <td>{driver.name}</td>
+
+                  <td>{driver.license_number}</td>
+
+                  <td>
+                    {driver.license_expiry}
+
+                    {isLicenseExpired(driver.license_expiry) && (
+                      <span
+                        className="badge badge-red"
+                        style={{ marginLeft: 8 }}
+                      >
+                        Expired
+                      </span>
+                    )}
+                  </td>
+
+                  <td>{driver.contact}</td>
+
+                  <td>
+                    {driver.safety_score ?? "-"}
+                  </td>
+
+                  <td>
+                    <span
+                      className={getStatusClass(driver.status)}
+                    >
+                      {driver.status || "Unknown"}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );

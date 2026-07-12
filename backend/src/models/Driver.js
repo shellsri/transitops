@@ -1,43 +1,57 @@
 module.exports = (sequelize, DataTypes) => {
   const Driver = sequelize.define(
-    'Driver',
+    "Driver",
     {
       id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
       },
+
       name: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      phone: {
-        type: DataTypes.STRING,
-        allowNull: true,
-      },
+
       license_number: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
       },
+
+      license_category: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+
       license_expiry: {
         type: DataTypes.DATEONLY,
         allowNull: false,
       },
-      status: {
-        type: DataTypes.ENUM('Available', 'On Trip', 'Off Duty', 'Suspended'),
-        allowNull: false,
-        defaultValue: 'Available',
-      },
-      // Optional link to a login-capable User account for this driver
-      userId: {
-        type: DataTypes.INTEGER,
+
+      phone: {
+        type: DataTypes.STRING,
         allowNull: true,
+      },
+
+      safety_score: {
+        type: DataTypes.DECIMAL(3, 2),
+        defaultValue: 5.0,
+      },
+
+      status: {
+        type: DataTypes.ENUM(
+          "Available",
+          "On Trip",
+          "Off Duty",
+          "Suspended"
+        ),
+        defaultValue: "Available",
       },
     },
     {
-      tableName: 'drivers',
-      timestamps: true,
+      tableName: "drivers",
+      timestamps: false,
     }
   );
 

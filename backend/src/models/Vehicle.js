@@ -1,35 +1,57 @@
 module.exports = (sequelize, DataTypes) => {
   const Vehicle = sequelize.define(
-    'Vehicle',
+    "Vehicle",
     {
       id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
       },
-      registration_number: {
+
+      reg_number: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
       },
-      type: {
-        type: DataTypes.ENUM('Bus', 'Van', 'Car', 'Truck'),
+
+      name: {
+        type: DataTypes.STRING,
         allowNull: false,
-        defaultValue: 'Van',
       },
-      capacity: {
-        type: DataTypes.INTEGER,
+
+      type: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+
+      max_load: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: false,
+      },
+
+      odometer: {
+        type: DataTypes.DECIMAL(10, 2),
+        defaultValue: 0,
+      },
+
+      acquisition_cost: {
+        type: DataTypes.DECIMAL(15, 2),
         allowNull: true,
       },
+
       status: {
-        type: DataTypes.ENUM('Available', 'On Trip', 'Maintenance', 'Out of Service'),
-        allowNull: false,
-        defaultValue: 'Available',
+        type: DataTypes.ENUM(
+          "Available",
+          "On Trip",
+          "In Shop",
+          "Retired"
+        ),
+        defaultValue: "Available",
       },
     },
     {
-      tableName: 'vehicles',
-      timestamps: true,
+      tableName: "vehicles",
+      timestamps: false,
     }
   );
 

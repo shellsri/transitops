@@ -1,70 +1,81 @@
 module.exports = (sequelize, DataTypes) => {
   const Trip = sequelize.define(
-    'Trip',
+    "Trip",
     {
       id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
       },
-      origin: {
+
+      source: {
         type: DataTypes.STRING,
         allowNull: false,
       },
+
       destination: {
         type: DataTypes.STRING,
         allowNull: false,
       },
+
+      vehicle_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+
+      driver_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+
+      cargo_weight: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: false,
+      },
+
       planned_distance: {
-        type: DataTypes.FLOAT,
+        type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
-        defaultValue: 0,
       },
-      actual_distance: {
-        type: DataTypes.FLOAT,
-        allowNull: true,
-      },
+
       status: {
-        type: DataTypes.ENUM('Planned', 'Dispatched', 'Completed', 'Cancelled'),
-        allowNull: false,
-        defaultValue: 'Planned',
+        type: DataTypes.ENUM(
+          "Draft",
+          "Dispatched",
+          "Completed",
+          "Cancelled"
+        ),
+        defaultValue: "Draft",
       },
-      scheduled_at: {
+
+      start_time: {
         type: DataTypes.DATE,
         allowNull: true,
       },
-      dispatched_at: {
+
+      end_time: {
         type: DataTypes.DATE,
         allowNull: true,
       },
-      completed_at: {
+
+      actual_odometer_end: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: true,
+      },
+
+      fuel_consumed_liters: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: true,
+      },
+
+      created_at: {
         type: DataTypes.DATE,
-        allowNull: true,
-      },
-      cancelled_at: {
-        type: DataTypes.DATE,
-        allowNull: true,
-      },
-      cancellation_reason: {
-        type: DataTypes.STRING,
-        allowNull: true,
-      },
-      vehicleId: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-      },
-      driverId: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-      },
-      createdBy: {
-        type: DataTypes.INTEGER,
         allowNull: true,
       },
     },
     {
-      tableName: 'trips',
-      timestamps: true,
+      tableName: "trips",
+      timestamps: false,
     }
   );
 

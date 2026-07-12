@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import Sidebar from '../components/Sidebar';
-import { fetchDashboardStats } from '../services/realApi';
+import { useState, useEffect } from "react";
+import Sidebar from "../components/Sidebar";
+import { fetchDashboardStats } from "../services/realApi";
 
 function Dashboard() {
   const [stats, setStats] = useState({
@@ -12,42 +12,96 @@ function Dashboard() {
     driversOnDuty: 0,
   });
 
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    fetchDashboardStats().then((data) => setStats(data));
+    async function loadDashboard() {
+      try {
+        const data = await fetchDashboardStats();
+        setStats(data);
+      } catch (err) {
+        console.error("Failed to load dashboard stats", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadDashboard();
   }, []);
+
+  const cards = [
+    {
+      title: "🚚 Active Vehicles",
+      value: stats.activeVehicles,
+      color: "#22c55e",
+    },
+    {
+      title: "🟢 Available Vehicles",
+      value: stats.availableVehicles,
+      color: "#3b82f6",
+    },
+    {
+      title: "🛠 In Maintenance",
+      value: stats.inMaintenance,
+      color: "#f59e0b",
+    },
+    {
+      title: "🗺 Active Trips",
+      value: stats.activeTrips,
+      color: "#8b5cf6",
+    },
+    {
+      title: "⏳ Pending Trips",
+      value: stats.pendingTrips,
+      color: "#ef4444",
+    },
+    {
+      title: "👨‍✈️ Drivers On Duty",
+      value: stats.driversOnDuty,
+      color: "#06b6d4",
+    },
+  ];
 
   return (
     <div className="page-layout">
       <Sidebar />
-      <div className="main-content">
-        <h1>Dashboard</h1>
 
-        <div className="kpi-grid">
-          <div className="kpi-card">
-            <p className="kpi-label">Active Vehicles</p>
-            <p className="kpi-value">{stats.activeVehicles}</p>
+      <div className="main-content">
+        <h1 className="dashboard-title">Dashboard</h1>
+
+        <p className="dashboard-subtitle">
+          Live overview of your fleet operations
+        </p>
+
+        {loading ? (
+          <p style={{ color: "#aaa", marginTop: "30px" }}>
+            Loading dashboard...
+          </p>
+        ) : (
+          <div className="kpi-grid">
+            {cards.map((card) => (
+              <div
+                key={card.title}
+                className="kpi-card"
+                style={{
+                  borderLeft: `5px solid ${card.color}`,
+                }}
+              >
+                <p className="kpi-label">{card.title}</p>
+
+                <p className="kpi-value">{card.value}</p>
+
+                <small
+                  style={{
+                    color: "#888",
+                  }}
+                >
+                  Live Data
+                </small>
+              </div>
+            ))}
           </div>
-          <div className="kpi-card">
-            <p className="kpi-label">Available Vehicles</p>
-            <p className="kpi-value">{stats.availableVehicles}</p>
-          </div>
-          <div className="kpi-card">
-            <p className="kpi-label">In Maintenance</p>
-            <p className="kpi-value">{stats.inMaintenance}</p>
-          </div>
-          <div className="kpi-card">
-            <p className="kpi-label">Active Trips</p>
-            <p className="kpi-value">{stats.activeTrips}</p>
-          </div>
-          <div className="kpi-card">
-            <p className="kpi-label">Pending Trips</p>
-            <p className="kpi-value">{stats.pendingTrips}</p>
-          </div>
-          <div className="kpi-card">
-            <p className="kpi-label">Drivers On Duty</p>
-            <p className="kpi-value">{stats.driversOnDuty}</p>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );

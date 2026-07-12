@@ -19,9 +19,11 @@ function Login() {
     try {
       const res = await axios.post(`${API_URL}/auth/login`, { email, password });
       const { token, user } = res.data;
-
+      console.log("LOGIN RESPONSE:", res.data);
+console.log("TOKEN:", token);
       // Store token and user info for later use
       localStorage.setItem('token', token);
+      console.log("Saved token:", localStorage.getItem("token"));
       localStorage.setItem('user', JSON.stringify(user));
 
       navigate('/dashboard');
