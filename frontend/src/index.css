@@ -109,3 +109,159 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #0d0d0d;
+}
+
+.login-box {
+  background-color: #1a1a1a;
+  padding: 40px;
+  border-radius: 12px;
+  width: 350px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.login-box h1 {
+  color: #ffffff;
+  margin-bottom: 5px;
+}
+
+.tagline {
+  color: #888;
+  font-size: 14px;
+  margin-bottom: 25px;
+}
+
+.form-group {
+  text-align: left;
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  color: #ccc;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #333;
+  background-color: #262626;
+  color: #fff;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #ff8c00;
+}
+
+.login-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #ff8c00;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.login-btn:hover {
+  background-color: #e67c00;
+}
+
+/* Layout */
+.page-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #0d0d0d;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 220px;
+  background-color: #1a1a1a;
+  padding: 20px;
+  flex-shrink: 0;
+}
+
+.sidebar-logo {
+  color: #fff;
+  font-size: 20px;
+  margin-bottom: 30px;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sidebar-link {
+  color: #aaa;
+  text-decoration: none;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.sidebar-link:hover {
+  background-color: #262626;
+  color: #fff;
+}
+
+.sidebar-link.active {
+  background-color: #ff8c00;
+  color: #fff;
+  font-weight: bold;
+}
+
+/* Main content */
+.main-content {
+  flex: 1;
+  padding: 30px 40px;
+}
+
+.main-content h1 {
+  color: #fff;
+  margin-bottom: 25px;
+}
+
+/* KPI Cards */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.kpi-card {
+  background-color: #1a1a1a;
+  border-radius: 10px;
+  padding: 20px;
+  border-left: 4px solid #ff8c00;
+}
+
+.kpi-label {
+  color: #999;
+  font-size: 13px;
+  margin: 0 0 8px 0;
+}
+
+.kpi-value {
+  color: #fff;
+  font-size: 28px;
+  font-weight: bold;
+  margin: 0;
+}
