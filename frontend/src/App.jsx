@@ -5,6 +5,7 @@ import Vehicles from './pages/Vehicles';
 import Drivers from './pages/Drivers';
 import Trips from './pages/Trips';
 import Maintenance from './pages/Maintenance';
+import ReportsPage from './pages/ReportsPage';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/drivers" element={<Drivers />} />
         <Route path="/trips" element={<Trips />} />
         <Route path="/maintenance" element={<Maintenance />} />
+        <Route path="/reports" element={<ReportsPage />} />
       </Routes>
     </BrowserRouter>
   );
